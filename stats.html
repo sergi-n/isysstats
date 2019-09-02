@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="test"></div>
+    <script>
+        var url = 'http://quicktest-api.isys.ge/api/Report/GetManagmentStats';
+        var ttmotors_stats = new XMLHttpRequest();
+        ttmotors_stats.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var reply_array = JSON.parse(this.responseText);
+                console.log(reply_array);
+                for (i = 0; i < reply_array.length; i++) {
+                    var key = reply_array[i].RegYear + '.' + reply_array[i].TestType + '.' + reply_array[i].TestResult + '.' + reply_array[i].Category;
+                    var reply_object = {
+                        [reply_array[i].RegYear]: {
+                            [reply_array[i].TestType]: {
+                                [reply_array[i].TestResult]: {
+                                    [reply_array[i].Category]: reply_array[i].ItemCount
+                                }
+                            }
+                        }
+                    }
+                    console.log(reply_object);
+                }
+            }
+        };
+        ttmotors_stats.open("GET", url, true);
+        ttmotors_stats.send();
+    </script>
+
+    <script>
+        let stats = [];
+        let testYear = [2018, 2019];
+        let testType = ['პირველადი', 'განმეორებითი'];
+        let testResult = ['გამართულია', 'გაუმართავია', 'აკრძალულია ასს-ს გზაზე მოძრაობა\r\n'];
+        for (z = 0; z < 6; z++) {
+            stats[z] = 0;
+        }
+
+        function sumOfAllStats(url) {
+            let requestStatistics = new XMLHttpRequest();
+            requestStatistics.open("GET", url, false);
+            requestStatistics.onreadystatechange = function() {
+                if (requestStatistics.readyState === 4) {
+                    if (requestStatistics.status === 200) {
+                        str = JSON.parse(requestStatistics.responseText);
+                        console.log(str.length);
+                        for (j = 0; j < testYear.length; j++) {
+                            z = 0;
+                            for (k = 0; k < testType.length; k++) {
+                                for (l = 0; l < testResult.length; l++) {
+                                    for (i = 0; i < str.length; i++) {
+                                        if (str[i].Category == 'სულ') {
+                                            if (str[i].RegYear == testYear[j]) {
+                                                if (str[i].TestType == testType[k]) {
+                                                    //if (str[i].TestResult.includes('აკრძალულია ასს-ს გზაზე მოძრაობა')) {stats[z] += str[i].ItemCount;console.log(str[i]);}
+                                                    if (str[i].TestResult == testResult[l]) { //console.log(i);
+                                                        console.log(str[i]);
+                                                        stats[z] += str[i].ItemCount;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    z++;
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+            requestStatistics.send();
+        }
+        sumOfAllStats('http://quicktest-api.isys.ge/api/Report/GetManagmentStats');
+    </script>
+
+</body>
+
+</html>

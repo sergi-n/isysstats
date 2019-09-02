@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        let url = 'http://quicktest-api.isys.ge/api/Report/GetManagmentStats';
+        let ttmotors_stats = new XMLHttpRequest;
+
+        function reply() {
+            if (ttmotors_stats.readyState == 4 && ttmotors_stats.status == 'ok') {
+                console.log(ttmotors_stats.responseXML);
+            }
+        }
+
+        ttmotors_stats.onreadystatechange = reply();
+        ttmotors_stats.open('GET', url, true);
+        ttmotors_stats.send();
+    </script>
+
+</body>
+
+</html>
